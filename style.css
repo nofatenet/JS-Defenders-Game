@@ -1,0 +1,16 @@
+body {
+    background: #000;
+}
+
+#canvas1 {
+    position: absolute;
+    border: 1px solid #fff;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center */
+    width: 900px;
+    height: 600px;
+    background: #000;
+    font-family: 'Press Start 2P', cursive;
+    cursor: crosshair;
+}

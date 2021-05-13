@@ -1,0 +1,8 @@
+https://www.codeandweb.com/free-sprite-sheet-packer
+
+Drag and Drop all the single Images of an Animation.
+Make it Horizontal and Export to PNG.
+
+
+Modify Images online:
+https://onlinepngtools.com/
