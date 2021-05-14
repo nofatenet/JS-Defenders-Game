@@ -19,8 +19,8 @@ let enemiesInterval = 750;
 let frame = 0;
 let gameOver = false;
 let score = 0;
-const winningScore = 500;
-let chosenDefender = 1;
+const winningScore = 800; // In other words: Score at which Monsters will start to give up!
+let chosenDefender = 0; // Better Select 1 for Default
 const gameGrid = [];
 const defenders = [];
 const enemies = [];
@@ -303,7 +303,7 @@ function handleFloatingMessages(){
     for (let i = 0; i < floatingMessages.length; i++) {
         floatingMessages[i].update();
         floatingMessages[i].draw();
-        if (floatingMessages[i].lifeSpan >= 50){
+        if (floatingMessages[i].lifeSpan >= 90){        // duration of Message
             floatingMessages.splice(i, 1);
             i--;
         }
@@ -328,7 +328,8 @@ class Enemy {
         this.height = cellSize - cellGap * 2;
         this.speed = Math.random() * 0.2 + 0.4;
         this.movement = this.speed;     // 2nd variable for movement speed (so enemy can go, stop, go...)
-        this.health = 100;
+        //this.health = 100;
+        this.health = Math.floor(Math.random() * 50 + 100);
         this.maxHealth = this.health;
         this.enemyType = enemyTypes[0];
         // this.enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
@@ -371,11 +372,11 @@ function handleEnemies(){
             gameOver = true;
         }
         if (enemies[i].health <= 0) {
-            let gainedMoney = enemies[i].maxHealth/10;
+            let gainedMoney = Math.floor(Math.random() * 30 + 10); //enemies[i].maxHealth/10;
             money += gainedMoney;
             score += gainedMoney;
             floatingMessages.push(new floatingMessage("+" + gainedMoney, enemies[i].x, enemies[i].y, 20, "gold"))
-            floatingMessages.push(new floatingMessage("+" + gainedMoney, 160, 60, 20, "gold"))
+            floatingMessages.push(new floatingMessage("+" + gainedMoney, 400, 60, 20, "gold"))
 
             const findThisIndex = enemyPositions.indexOf(enemies[i].y)
             enemyPositions.splice(findThisIndex, 1);
@@ -394,25 +395,33 @@ function handleEnemies(){
 }
 
 // Money
-const amounts = [20, 30, 40];
+
+const amounts = [10, 20, 30, 40, 50];
+
+const money1 = new Image();
+money1.src = "money1.png";
+
 class Money {
     constructor(){
         this.x = Math.random() * (canvas.width - cellSize);
         this.y = (Math.floor(Math.random() * 5) + 1) * cellSize + 25;
-        this.width = cellSize * 0.6;
-        this.height = cellSize * 0.6;
+        this.width = cellSize;
+        this.height = cellSize;
         this.amount = amounts[Math.floor(Math.random() * amounts.length)];
     }
     draw(){
-        ctx.fillStyle = "#770";
-        ctx.fillRect(this.x, this.y, this.width, this.height);
-        ctx.fillStyle = "#ddd";
-        ctx.font = "20px 'Press Start 2P'";
-        ctx.fillText(this.amount, this.x + 16, this.y + 24);
+        //ctx.fillStyle = "#770";
+        //ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.drawImage(money1, this.x, this.y, this.width, this.height);
+
+        // Draw Amount Next to it?
+        //ctx.fillStyle = "#ddd";
+        //ctx.font = "20px 'Press Start 2P'";
+        //ctx.fillText(this.amount, this.x + 16, this.y + 24);
     }
 }
 function handleMoney(){
-    if (frame % 500 === 0 && score < winningScore){
+    if (frame % 600 === 0 && score < winningScore){
         moneys.push(new Money());
     }
     for (let i = 0; i < moneys.length; i++) {
@@ -422,7 +431,7 @@ function handleMoney(){
             floatingMessages.push(new floatingMessage(
                 "+" + moneys[i].amount, moneys[i].x, moneys[i].y, 24, "#ccc"))
             floatingMessages.push(new floatingMessage(
-                "+" + moneys[i].amount, 160, 60, 20, "gold"))
+                "+" + moneys[i].amount, 400, 60, 20, "gold"))
             moneys.splice(i, 1);
             i--;
         }
@@ -450,7 +459,7 @@ function handleGameStatus(){
         ctx.font = "60px 'Press Start 2P'";
         ctx.fillText("WELL DONE", 240, 300);
         ctx.font = "30px 'Press Start 2P'";
-        ctx.fillText("You win with " + score + " Points!", 240, 360);
+        ctx.fillText("You win with " + score + " Points!", 200, 360);
     }
 }
 
@@ -484,11 +493,19 @@ canvas.addEventListener("click", function() {
     }
 });
 
+// Menu Bar
+function menuBar() {
+    opacity = 0.5
+    ctx.globalAlpha = this.opacity;
+    ctx.fillStyle = "#036";
+    ctx.fillRect(0,0,controlsBar.width, controlsBar.height);    // (posX,posY,Xsize,Ysize)
+    ctx.globalAlpha = 1;
+}
+500
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBG();
-    ctx.fillStyle = "#039";
-    ctx.fillRect(0,0,controlsBar.width, controlsBar.height);    // (posX,posY,Xsize,Ysize)
+    menuBar();
     handleGameGrid();
     handleDefenders();
     handleProjectiles();
