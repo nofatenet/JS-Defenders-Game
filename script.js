@@ -320,9 +320,12 @@ const enemyTypes = [];
 const enemy1 = new Image();
 enemy1.src = "bat-anim1.png";
 enemyTypes.push(enemy1);
-// const enemy2 = new Image();
-// enemy2.src = "enemy2.png";
-// enemyTypes.push(enemy2);
+const enemy2 = new Image();
+enemy2.src = "bat-anim2.png";
+enemyTypes.push(enemy2);
+const enemy3 = new Image();
+enemy3.src = "bat-anim3.png";
+enemyTypes.push(enemy3);
 
 class Enemy {
     constructor(verticalPosition){
@@ -335,8 +338,8 @@ class Enemy {
         //this.health = 100;
         this.health = Math.floor(Math.random() * 50 + 100);
         this.maxHealth = this.health;
-        this.enemyType = enemyTypes[0];
-        // this.enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
+        // this.enemyType = enemyTypes[0];
+        this.enemyType = enemyTypes[Math.floor(Math.random() * enemyTypes.length)];
         this.frameX = 0;                // Horizontal Frame in Sprite-Sheet
         this.frameY = 0;
         this.minFrame = 0;
