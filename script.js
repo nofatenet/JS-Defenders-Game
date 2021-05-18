@@ -180,6 +180,8 @@ class Defender {
             if (this.timer % 100 === 0) {
                 projectiles.push(new Projectiles(this.x + 48, this.y + 40)); // Position of the Projectile
                 this.frameX = 1;
+                // Sound of Shooting:
+                zzfx(...[.6,.3,65,.03,.03,0,4,1.32,1.3,.9,100,,,,,.777,.1,.1,.04]);
             }
         } else {
             this.timer = 0;
@@ -221,6 +223,8 @@ function handleDefenders(){
                 defenders.splice(i, 1);
                 i--;
                 enemies[j].movement = enemies[j].speed;
+                // Sound of Defender Death:
+                zzfx(...[,.3,323,,.1,.05,1,.73,.9,.1,,,.2,,19,.1,.2,.5,.2]);
             }
         }
     }
@@ -383,6 +387,8 @@ function handleEnemies(){
             enemies.splice(i, 1);
             i--;
             console.log(enemyPositions);
+            // Sound of Enemy Death:
+            zzfx(...[0.5,.1,18,.05,.05,.4,,3.7,7,,5,7,,,11,.3,.35,.27,.06,.8]);
         }
     }
     if (frame % enemiesInterval === 0 && score < winningScore){
@@ -434,6 +440,8 @@ function handleMoney(){
                 "+" + moneys[i].amount, 400, 60, 20, "gold"))
             moneys.splice(i, 1);
             i--;
+            // Sound of Money:
+            zzfx(...[,2.1,27,.04,.03,.2,,.6,-4,-1.1,-342,.05,.09,,1,.02,.15,.28,.06]);
         }
     }
 }
@@ -453,6 +461,8 @@ function handleGameStatus(){
         ctx.fillStyle = "#ddd";
         ctx.font = "80px 'Press Start 2P'";
         ctx.fillText("Game Over", 140, 320);
+        // Sound of Losing:
+        zzfx(...[1,,97,,.26,.35,2,.73,.9,.4,,,.5,.1,21,.1,.5,.52,.06]);
     }
     if (score >= winningScore && enemies.length === 0){
         ctx.fillStyle = "#ccc";
@@ -460,6 +470,8 @@ function handleGameStatus(){
         ctx.fillText("WELL DONE", 240, 300);
         ctx.font = "30px 'Press Start 2P'";
         ctx.fillText("You win with " + score + " Points!", 200, 360);
+        // Sound of Winning:
+        //WTF is this? zzfx(...[1.45,,346,.06,.2,.4,,.5,1,,,,.17,.3,1,,.5,.9,.1,.12]);
     }
 }
 
