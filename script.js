@@ -5,7 +5,6 @@
 // 4. Run a For Loop through the Array updating and Drawing each of the Elements through the AnimationFrame.
 
 const canvas = document.getElementById('canvas1');
-
 const ctx = canvas.getContext('2d');
 
 canvas.width = 900;
@@ -30,7 +29,6 @@ const moneys = [];
 
 
 // BG
-
 const bg1 = new Image();
 bg1.src = "bg_1.png";
 function drawBG(){
@@ -103,12 +101,12 @@ function handleGameGrid(){
 
 // Projectiles
 class Projectiles {
-    constructor(x, y){
+    constructor(x, y, power){
         this.x = x;
         this.y = y;
         this.width = 8;
         this.height = 8;
-        this.power = 20;
+        this.power = power;
         this.speed = 6;
     }
     update(){
@@ -156,7 +154,7 @@ const defender2card = new Image();
 defender2card.src = "hero2_card.png";
 
 class Defender {
-    constructor(x, y, baseHealth){
+    constructor(x, y, baseHealth, attackPower){
         this.x = x;
         this.y = y;
         this.width = cellSize - cellGap * 2;
@@ -173,12 +171,14 @@ class Defender {
         this.minFrame = 0;
         this.maxFrame = 1;
         this.chosenDefender = chosenDefender;
+        this.baseAttackPower = 20;
+        this.attackPower = baseAttackPower;
     }
     update(){
         if (this.shooting){
             this.timer++;
             if (this.timer % 100 === 0) {
-                projectiles.push(new Projectiles(this.x + 48, this.y + 40)); // Position of the Projectile
+                projectiles.push(new Projectiles(this.x + 48, this.y + 40, this.attackPower)); // Projectile: Position and Power 
                 this.frameX = 1;
                 // Sound of Shooting:
                 zzfx(...[.6,.3,65,.03,.03,0,4,1.32,1.3,.9,100,,,,,.777,.1,.1,.04]);
@@ -470,9 +470,9 @@ function handleGameStatus(){
     if (score >= winningScore && enemies.length === 0){
         ctx.fillStyle = "#ccc";
         ctx.font = "60px 'Press Start 2P'";
-        ctx.fillText("WELL DONE", 240, 300);
+        ctx.fillText("WELL DONE", 220, 300);
         ctx.font = "30px 'Press Start 2P'";
-        ctx.fillText("You win with " + score + " Points!", 200, 360);
+        ctx.fillText("You win with " + score + " Points!", 160, 360);
         // Sound of Winning:
         //WTF is this? zzfx(...[1.45,,346,.06,.2,.4,,.5,1,,,,.17,.3,1,,.5,.9,.1,.12]);
     }
@@ -489,17 +489,19 @@ canvas.addEventListener("click", function() {
         if (defenders[i].x === gridPositionX && defenders[i].y === gridPositionY) return;
     }
 
-    let defenderCost = 100;
-
+// Defender Details:
     if (chosenDefender === 1){
         baseHealth = 100;
+        defenderCost = 100;
+        baseAttackPower = 10;
     } else if (chosenDefender === 2){
-        baseHealth = 150;
+        baseHealth = 180;
         defenderCost = 150;
+        baseAttackPower = 20;
     }
 
     if (money >= defenderCost){
-        defenders.push(new Defender(gridPositionX, gridPositionY, baseHealth));
+        defenders.push(new Defender(gridPositionX, gridPositionY, baseHealth, baseAttackPower));
         money -= defenderCost;
         //console.log("Money: ", money);
     } else {
@@ -512,11 +514,16 @@ canvas.addEventListener("click", function() {
 function menuBar() {
     opacity = 0.5
     ctx.globalAlpha = this.opacity;
-    ctx.fillStyle = "#036";
-    ctx.fillRect(0,0,controlsBar.width, controlsBar.height);    // (posX,posY,Xsize,Ysize)
+    //ctx.fillStyle = "#036";
+    //ctx.fillRect(0,0,controlsBar.width, controlsBar.height);    // (posX,posY,Xsize,Ysize)
+    let grad = ctx.createLinearGradient(0, 0, controlsBar.width, controlsBar.height);
+    grad.addColorStop(0, '#666');
+    grad.addColorStop(1, '#033');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,controlsBar.width, controlsBar.height);
     ctx.globalAlpha = 1;
 }
-500
+
 function animate(){
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawBG();
