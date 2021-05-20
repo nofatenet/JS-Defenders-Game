@@ -69,7 +69,7 @@ const controlsBar = {
     height: cellSize,
 }
 
-const friction = 0.96; //low means gibs splatt! high means gibs will travel far!
+const friction = 0.99; //low means gibs splatt! high means gibs will travel far!
 class Gib {
     constructor(x, y, radius, color, velocity) {
         this.x = x;
@@ -77,15 +77,15 @@ class Gib {
         this.radius = Math.random() * (10 - 5) + 5;
         this.color = color;
         this.velocity = velocity;
-        this.alpha = 0.5;
+        this.alpha = 0.8;
+        this.size = 8;
     }
 
     draw() {
         ctx.save();
         ctx.globalAlpha = this.alpha;
-        ctx.fillStyle = "#501";
-        ctx.fillRect(this.x, this.y, 8, 8);
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = "#CDE";  // "#501";
+        ctx.fillRect(this.x, this.y, this.size, this.size);
         ctx.fill();
         ctx.restore();
     }
@@ -93,9 +93,10 @@ class Gib {
         this.draw();
         this.velocity.x *= friction;
         this.velocity.y *= friction;
-        this.x = this.x + this.velocity.x
-        this.y = this.y + this.velocity.y
-        this.alpha -= 0.001
+        this.x = this.x + this.velocity.x;
+        this.y = this.y + this.velocity.y;
+        this.size += 0.1;
+        this.alpha -= 0.01;
         // Alpha can be really small. BUT: It needs to have at least SOME value...
         // Or they will never be removed and the canvas will look like Jackson Pollock Art...
         // And of course, the CPU will say Good-Bye sooner or later
@@ -139,8 +140,8 @@ class Projectiles {
     constructor(x, y, power){
         this.x = x;
         this.y = y;
-        this.width = 8;
-        this.height = 8;
+        this.width = 10;
+        this.height = 6;
         this.power = power;
         this.speed = 6;
     }
@@ -162,6 +163,17 @@ function handleProjectiles(){
 
         for (let j = 0; j < enemies.length; j++) {
             if (enemies[j] && projectiles[i] && collision(projectiles[i], enemies[j])){
+                
+                // Gib Projectile:
+                gibs.push(new Gib(
+                enemies[j].x + 16,
+                enemies[j].y + 32,
+                Math.random() * 2,
+                "#CCF",
+                {x: (Math.random() - 0.5) * (Math.random() * 4),
+                y: (Math.random() - 0.5) * (Math.random() * 4)
+                })); 
+
                 enemies[j].health -= projectiles[i].power;
                 projectiles.splice(i, 1);
                 i--;
@@ -252,9 +264,20 @@ function handleDefenders(){
         for (let j = 0; j < enemies.length; j++) {
             if (defenders[i] && collision(defenders[i], enemies[j])){
                 enemies[j].movement = 0;
-                defenders[i].health -= 1;
+                defenders[i].health -= 0.33;
             }
             if (defenders[i] && defenders[i].health <= 0){
+
+                // Gib Defender:
+                gibs.push(new Gib(
+                defenders[i].x + 16,
+                defenders[i].y + 16,
+                Math.random() * 2,
+                "#999966",
+                {x: (Math.random() - 0.5) * (Math.random() * 4),
+                y: (Math.random() - 0.5) * (Math.random() * 4)
+                }));
+
                 defenders.splice(i, 1);
                 i--;
                 enemies[j].movement = enemies[j].speed;
