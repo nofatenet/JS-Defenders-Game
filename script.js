@@ -13,12 +13,12 @@ canvas.height = 600;
 // Global Variables
 const cellSize = 100;
 const cellGap = 3;
-let money = 750;
+let money = 900;            // Starting Capital
 let enemiesInterval = 750;
 let frame = 0;
 let gameOver = false;
 let score = 0;
-const winningScore = 800; // In other words: Score at which Monsters will start to give up!
+const winningScore = 500; // In other words: Score at which Monsters will start to give up!
 let chosenDefender = 0; // Better Select 1 for Default
 const gameGrid = [];
 const defenders = [];
@@ -26,6 +26,7 @@ const enemies = [];
 const enemyPositions = [];
 const projectiles = [];
 const moneys = [];
+let gibs = [];
 
 
 // BG
@@ -67,6 +68,40 @@ const controlsBar = {
     width: canvas.width,
     height: cellSize,
 }
+
+const friction = 0.96; //low means gibs splatt! high means gibs will travel far!
+class Gib {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x;
+        this.y = y;
+        this.radius = Math.random() * (10 - 5) + 5;
+        this.color = color;
+        this.velocity = velocity;
+        this.alpha = 0.5;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.globalAlpha = this.alpha;
+        ctx.fillStyle = "#501";
+        ctx.fillRect(this.x, this.y, 8, 8);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+        ctx.restore();
+    }
+    update() {
+        this.draw();
+        this.velocity.x *= friction;
+        this.velocity.y *= friction;
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+        this.alpha -= 0.001
+        // Alpha can be really small. BUT: It needs to have at least SOME value...
+        // Or they will never be removed and the canvas will look like Jackson Pollock Art...
+        // And of course, the CPU will say Good-Bye sooner or later
+    }
+}
+
 
 class Cell {
     constructor(x, y){
@@ -379,6 +414,17 @@ function handleEnemies(){
             gameOver = true;
         }
         if (enemies[i].health <= 0) {
+
+            // Gib Enemy:
+            gibs.push(new Gib(
+            enemies[i].x + 16,
+            enemies[i].y + 16,
+            Math.random() * 2,
+            "#999966",
+            {x: (Math.random() - 0.5) * (Math.random() * 4),
+            y: (Math.random() - 0.5) * (Math.random() * 4)
+            }));
+
             let gainedMoney = Math.floor(Math.random() * 30 + 10); //enemies[i].maxHealth/10;
             money += gainedMoney;
             score += gainedMoney;
@@ -392,6 +438,7 @@ function handleEnemies(){
             console.log(enemyPositions);
             // Sound of Enemy Death:
             zzfx(...[0.5,.1,18,.05,.05,.4,,3.7,7,,5,7,,,11,.3,.35,.27,.06,.8]);
+        
         }
     }
     if (frame % enemiesInterval === 0 && score < winningScore){
@@ -536,6 +583,14 @@ function animate(){
     chooseDefender();
     handleGameStatus();
     handleFloatingMessages();
+
+        gibs.forEach((gib, gibIndex) => {
+        if (gib.alpha <= 0) {
+            gibs.splice(gibIndex, 1)    // Remove Gib when faded (alpha is 0)
+        } else {
+            gib.update();
+        }
+    });
 
     frame++;
     // console.log(frame); //frames of the game
